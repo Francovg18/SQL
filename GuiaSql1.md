@@ -1,3 +1,4 @@
+
 # 📘 Guía Básica de PostgreSQL y SQL
 
 ## 🔍 ¿Qué es SQL?
@@ -161,9 +162,80 @@ JOIN departamentos d ON e.departamento_id = d.id;
 
 ---
 
+## 🔗 Relaciones entre tablas: `persona` y `direccion`
+
+```sql
+CREATE TABLE persona (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(20),
+    edad INT,
+    sueldo DECIMAL(10,2)
+);
+
+CREATE TABLE direccion (
+    id SERIAL PRIMARY KEY,
+    persona_id INT REFERENCES persona(id),
+    calle VARCHAR(50),
+    ciudad VARCHAR(30),
+    codigo_postal VARCHAR(10)
+);
+
+-- Insertar datos
+INSERT INTO persona (nombre, edad, sueldo)
+VALUES
+('Carlos López', 35, 5200.50),
+('María Paz', 27, 4100.00);
+
+INSERT INTO direccion (persona_id, calle, ciudad, codigo_postal)
+VALUES
+(1, 'Av. Arce 123', 'La Paz', '1001'),
+(2, 'Calle 21 de Calacoto', 'La Paz', '1002');
+```
+
+---
+
+## 🔍 Consultas JOIN entre persona y direccion
+
+### Ver nombre, ciudad y sueldo
+
+```sql
+SELECT p.nombre, p.sueldo, d.ciudad
+FROM persona p
+JOIN direccion d ON p.id = d.persona_id;
+```
+
+### Ver personas que viven en "La Paz"
+
+```sql
+SELECT p.nombre, d.calle
+FROM persona p
+JOIN direccion d ON p.id = d.persona_id
+WHERE d.ciudad = 'La Paz';
+```
+
+### Personas sin dirección (LEFT JOIN)
+
+```sql
+SELECT p.nombre, d.ciudad
+FROM persona p
+LEFT JOIN direccion d ON p.id = d.persona_id
+WHERE d.id IS NULL;
+```
+
+### Dirección y edad ordenadas por ciudad
+
+```sql
+SELECT p.nombre, p.edad, d.ciudad, d.calle
+FROM persona p
+JOIN direccion d ON p.id = d.persona_id
+ORDER BY d.ciudad ASC;
+```
+
+---
+
 ## ✅ Conclusión
 
-PostgreSQL junto con SQL es una poderosa herramienta para manejar grandes volúmenes de datos de forma estructurada, segura y escalable. Ideal para reemplazar Excel cuando los datos comienzan a crecer.
+La creación de tablas relacionadas permite diseñar **bases de datos normalizadas**, evitando duplicación de datos y facilitando el mantenimiento. Con SQL puedes consultar, unir y analizar fácilmente la información distribuida entre varias tablas.
 
 ---
 
